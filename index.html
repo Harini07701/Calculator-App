@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="calculator-container">
+        <h1 class="title">Calculator</h1>
+        <div class="calculator">
+            <input type="text" id="display" readonly placeholder="0">
+            <div class="buttons">
+                <button onclick="appendValue('7')">7</button>
+                <button onclick="appendValue('8')">8</button>
+                <button onclick="appendValue('9')">9</button>
+                <button class="operator" onclick="appendValue('/')">÷</button>
+
+                <button onclick="appendValue('4')">4</button>
+                <button onclick="appendValue('5')">5</button>
+                <button onclick="appendValue('6')">6</button>
+                <button class="operator" onclick="appendValue('*')">×</button>
+
+                <button onclick="appendValue('1')">1</button>
+                <button onclick="appendValue('2')">2</button>
+                <button onclick="appendValue('3')">3</button>
+                <button class="operator" onclick="appendValue('-')">−</button>
+
+                <button onclick="appendValue('0')">0</button>
+                <button onclick="appendValue('.')">.</button>
+                <button class="equals" onclick="calculate()">=</button>
+                <button class="operator" onclick="appendValue('+')">+</button>
+
+                <button class="function" onclick="appendValue('sqrt(')">√</button>
+                <button class="function" onclick="appendValue('sin(')">sin</button>
+                <button class="function" onclick="appendValue('cos(')">cos</button>
+                <button class="clear" onclick="clearDisplay()">C</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let display = document.getElementById("display");
+
+    function appendValue(val) {
+        display.value += val;
+    }
+
+    function clearDisplay() {
+        display.value = "";
+    }
+
+    function calculate() {
+        fetch("/calculate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({expression: display.value})
+        })
+        .then(response => response.json())
+        .then(data => {
+            display.value = data.result;
+        });
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            calculate();
+        } else if (!isNaN(event.key) || "+-*/.".includes(event.key)) {
+            display.value += event.key;
+        }
+    });
+</script>
+</body>
+</html>
+
